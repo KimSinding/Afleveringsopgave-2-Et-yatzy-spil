@@ -10,3 +10,4 @@ obj/
 appsettings.Development.json
 *.user
 *.log
+*_wpftmp.csproj
