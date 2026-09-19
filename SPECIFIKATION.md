@@ -95,7 +95,7 @@ Programmet er et WPF-spil til 1–6 lokale menneskelige spillere. Computeren kan
 - Udfyldte felter vises som faste point. Udfyldningsforslag vises kun for den aktuelle spiller.
 - Bonus vises som 50 straks ved mindst 63 i øvre sektion; når den øvre sektion er færdig uden 63 point, vises 0.
 - Efter et 0-points valg vises “Vil du stryge {kategori}?” med Ja/Nej.
-- Ved afslutning vises en slutskærm med alle spillere sorteret efter samlet score, tydeligt markerede vindere og den komplette pointtavle for alle spillere. “Nyt spil” er altid tilgængeligt. Ved klik vises dialogen “Er du sikker på, at du vil afbryde spillet og starte et nyt?”. Først ved bekræftelse afbrydes en eventuel animation eller computerhandling, den gamle gemte spiltilstand slettes, og der vendes tilbage til startvinduet; ellers fortsætter det igangværende spil uændret.
+- Ved afslutning vises en slutskærm med alle spillere sorteret efter samlet score, tydeligt markerede vindere og den komplette pointtavle for alle spillere. “Nyt spil” er altid tilgængeligt. Mens et spil er i gang, vises ved klik dialogen “Er du sikker på, at du vil afbryde spillet og starte et nyt?”. Først ved bekræftelse afbrydes en eventuel animation eller computerhandling, den gamle gemte spiltilstand slettes, og der vendes tilbage til startvinduet; ellers fortsætter det igangværende spil uændret. Efter et afsluttet spil åbner “Nyt spil” startvinduet direkte uden en bekræftelsesdialog.
 - Hvis brugeren lukker programvinduet, mens et spil er i gang, vises dialogen “Er du sikker på, at du vil afslutte? Det igangværende spil gemmes og kan fortsættes senere.” Ved Nej forbliver programmet åbent.
 - Computerens kast, holdte terninger og valgte scorefelt vises i hovedvinduet, så brugeren kan følge dens tur.
 - Under computerens tænkepause vises en tydelig status, fx “Computeren tænker…”.
@@ -177,7 +177,7 @@ Derudover testes, at 62 i øvre sektion giver 0 bonus, 63 giver 50, en kategori 
 - Spiltilstanden testes for dubletter, streg og afslutning efter 15 felter pr. spiller.
 - Computerens valg testes for samme lovlige handlinger og begrænsninger som et menneskes.
 - Gemte spil testes for genoptagelse fra en stabil tilstand og sikker håndtering af manglende eller ugyldig JSON.
-- Brugerfladen gennemgås manuelt for navnevalidering, dansk tekst, responsivt layout, animation, lydindstilling, dialoger og visning af computerens tur.
+- Brugerfladen gennemgås manuelt for navnevalidering, dansk tekst, responsivt layout, animation, lydindstilling, dialoger og visning af computerens tur. Det kontrolleres også, at “Nyt spil” spørger under et igangværende spil, men åbner startvinduet direkte efter et afsluttet spil.
 
 ## Projektstruktur og faser
 
