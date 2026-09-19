@@ -1,0 +1,12 @@
+# Build-output
+bin/
+obj/
+
+# Visual Studio / VS Code
+.vs/
+.vscode/
+
+# Hemmeligheder og lokale filer
+appsettings.Development.json
+*.user
+*.log
