@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Yatzy.App/Yatzy.App.csproj" />
+    <Project Path="src/Yatzy.Core/Yatzy.Core.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Yatzy.Tests/Yatzy.Tests.csproj" />
+  </Folder>
+</Solution>
