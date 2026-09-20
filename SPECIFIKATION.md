@@ -112,7 +112,7 @@ Computeren må observere de menneskelige medspilleres afsluttede ture på samme 
 
 Brugeren kan fra start- eller hovedvinduet vælge “Nulstil computerens læring”. Handlingen sletter kun de gemte spillestilsmønstre og kræver en bekræftelse.
 
-Computeren lærer også gruppens tempo ved at måle tiden fra et menneskeligt valg bliver muligt, til handlingen udføres. Den bruger et løbende gennemsnit som tænkepause for tilsvarende computerhandlinger. Pausen begrænses til et rimeligt interval, så spillet hverken føles øjeblikkeligt eller unødigt langsomt.
+Computeren lærer også gruppens tempo ved at måle tiden fra et menneskeligt valg bliver muligt, til handlingen udføres. Den bruger et løbende gennemsnit som tænkepause for tilsvarende computerhandlinger. Indtil der er målt menneskelig beslutningstid, er pausen 800 ms. Pausen begrænses derefter til mellem 400 og 2.000 ms, så spillet hverken føles øjeblikkeligt eller unødigt langsomt.
 
 ## Brugerforløb
 
