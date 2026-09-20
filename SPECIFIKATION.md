@@ -52,6 +52,7 @@ Programmet er et WPF-spil til 1–6 lokale menneskelige spillere. Computeren kan
 12. Når et spil afsluttes normalt, slettes den gemte spiltilstand automatisk. Slutskærmen med resultaterne vises fortsat.
 13. Et igangværende spil gemmes automatisk efter hver færdig spilhandling: når et kast er afsluttet, når en terning holdes eller frigives, og når et scorefelt vælges. Der gemmes ikke midt i en rulle-animation eller anden overgang, så et genoptaget spil altid starter i en stabil tilstand.
 14. Hvis programmet lukkes under Computerens tur, genoptages spillet fra Computerens seneste stabile handling. Computeren gennemfører derefter resten af sin tur automatisk efter de almindelige regler.
+15. Spillerne tager tur i den rækkefølge, deres navne indtastes. Når Computeren deltager, placeres den sidst i turordenen.
 
 ## Scoreregler
 
