@@ -25,4 +25,13 @@ public sealed class AppSettings
 public sealed class ComputerLearningData
 {
     public Dictionary<string, int> PatternCounts { get; set; } = [];
+
+    public Dictionary<ComputerActionType, DecisionTiming> TimingByAction { get; set; } = [];
+}
+
+public sealed class DecisionTiming
+{
+    public int ObservationCount { get; set; }
+
+    public double AverageMilliseconds { get; set; }
 }
