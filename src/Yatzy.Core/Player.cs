@@ -3,16 +3,23 @@ namespace Yatzy.Core;
 public sealed class Player
 {
     public Player(string name, bool isComputer = false)
+        : this(Guid.NewGuid(), name, isComputer, new ScoreSheet())
+    {
+    }
+
+    internal Player(Guid id, string name, bool isComputer, ScoreSheet scoreSheet)
     {
         if (string.IsNullOrWhiteSpace(name))
         {
             throw new ArgumentException("En spiller skal have et navn.", nameof(name));
         }
 
-        Id = Guid.NewGuid();
+        ArgumentNullException.ThrowIfNull(scoreSheet);
+
+        Id = id;
         Name = name;
         IsComputer = isComputer;
-        ScoreSheet = new ScoreSheet();
+        ScoreSheet = scoreSheet;
     }
 
     public Guid Id { get; }

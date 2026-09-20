@@ -26,4 +26,15 @@ public sealed class Die
         Value = 0;
         IsHeld = false;
     }
+
+    internal void Restore(int value, bool isHeld)
+    {
+        if (value is < 0 or > 6)
+        {
+            throw new ArgumentOutOfRangeException(nameof(value));
+        }
+
+        Value = value;
+        IsHeld = isHeld;
+    }
 }

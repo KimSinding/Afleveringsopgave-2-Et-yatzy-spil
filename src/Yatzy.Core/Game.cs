@@ -29,6 +29,8 @@ public sealed class Game
 
     public int RollsRemaining => MaximumRollsPerTurn - RollCount;
 
+    public int Round => Math.Min(_players.Min(player => player.ScoreSheet.Scores.Count) + 1, 15);
+
     public bool CanRoll => !IsComplete && RollCount < MaximumRollsPerTurn;
 
     public bool CanSelectScore => !IsComplete && RollCount > 0;
@@ -88,6 +90,54 @@ public sealed class Game
         RollCount = 0;
         MoveToNextPlayer();
         return score;
+    }
+
+    public GameState CreateState() => new(
+        _players.Select(player => new PlayerState(
+            player.Id,
+            player.Name,
+            player.IsComputer,
+            new Dictionary<ScoreCategory, int>(player.ScoreSheet.Scores))).ToArray(),
+        _dice.Select(die => new DieState(die.Value, die.IsHeld)).ToArray(),
+        _currentPlayerIndex,
+        RollCount,
+        Round);
+
+    public static Game Restore(GameState state, IDiceRoller diceRoller)
+    {
+        ArgumentNullException.ThrowIfNull(state);
+        ArgumentNullException.ThrowIfNull(diceRoller);
+
+        if (state.Players is null || state.Dice is null || state.Dice.Count != DiceCount)
+        {
+            throw new ArgumentException("Den gemte spiltilstand er ugyldig.", nameof(state));
+        }
+
+        var players = state.Players
+            .Select(player => new Player(
+                player.Id,
+                player.Name,
+                player.IsComputer,
+                ScoreSheet.Restore(player.Scores ?? new Dictionary<ScoreCategory, int>())))
+            .ToArray();
+        var game = new Game(players, diceRoller);
+
+        if (state.CurrentPlayerIndex < 0 ||
+            state.CurrentPlayerIndex >= players.Length ||
+            state.RollCount < 0 ||
+            state.RollCount > MaximumRollsPerTurn)
+        {
+            throw new ArgumentException("Den gemte spiltilstand er ugyldig.", nameof(state));
+        }
+
+        for (var index = 0; index < DiceCount; index++)
+        {
+            game._dice[index].Restore(state.Dice[index].Value, state.Dice[index].IsHeld);
+        }
+
+        game._currentPlayerIndex = state.CurrentPlayerIndex;
+        game.RollCount = state.RollCount;
+        return game;
     }
 
     private static void ValidatePlayers(IReadOnlyCollection<Player> players)

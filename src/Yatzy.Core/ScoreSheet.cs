@@ -49,4 +49,17 @@ public sealed class ScoreSheet
 
         _scores.Add(category, score);
     }
+
+    internal static ScoreSheet Restore(IEnumerable<KeyValuePair<ScoreCategory, int>> scores)
+    {
+        ArgumentNullException.ThrowIfNull(scores);
+
+        var scoreSheet = new ScoreSheet();
+        foreach (var score in scores)
+        {
+            scoreSheet.RecordScore(score.Key, score.Value);
+        }
+
+        return scoreSheet;
+    }
 }
