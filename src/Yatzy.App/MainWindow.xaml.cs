@@ -17,6 +17,7 @@ public partial class MainWindow : Window
     private readonly JsonStorage _storage = new();
     private readonly ComputerLearningData _learningData;
     private readonly Stopwatch _humanDecisionStopwatch = new();
+    private readonly CancellationTokenSource _lifetimeCancellation = new();
     private AppSettings _settings;
     private bool _isComputerTurn;
     private bool _isAnimating;
@@ -37,7 +38,19 @@ public partial class MainWindow : Window
     private async void RollClicked(object sender, RoutedEventArgs e)
     {
         ObserveHumanDecision(ComputerActionType.HoldAndRoll);
-        await AnimateDiceAsync();
+        try
+        {
+            await AnimateDiceAsync(_lifetimeCancellation.Token);
+        }
+        catch (OperationCanceledException)
+        {
+            return;
+        }
+
+        if (_lifetimeCancellation.IsCancellationRequested)
+        {
+            return;
+        }
         _game.Roll();
         PlayRollSound();
         _storage.SaveGame(_game);
@@ -86,26 +99,28 @@ public partial class MainWindow : Window
             _diceButtons[index].IsEnabled = humanCanAct && _game.RollCount is > 0 and < 3;
             _diceButtons[index].Background = die.IsHeld ? Brushes.Goldenrod : Brushes.White;
         }
+        var scoreFontSize = Math.Clamp(ActualWidth / (_game.Players.Count * 13.0), 10, 16);
         ScorePanel.Children.Clear();
-        var header = new StackPanel { Orientation = Orientation.Horizontal, Margin = new Thickness(3) };
-        header.Children.Add(new TextBlock { Text = "Felt", Width = 150, FontSize = 16, FontWeight = FontWeights.Bold });
-        foreach (var player in _game.Players)
+        var header = CreateScoreGrid();
+        AddScoreCell(header, new TextBlock { Text = "Felt", FontSize = scoreFontSize, FontWeight = FontWeights.Bold }, 0);
+        for (var playerIndex = 0; playerIndex < _game.Players.Count; playerIndex++)
         {
-            header.Children.Add(new TextBlock { Text = player.Name, Width = 90, FontSize = 16, FontWeight = FontWeights.Bold, TextAlignment = TextAlignment.Center });
+            AddScoreCell(header, new TextBlock { Text = _game.Players[playerIndex].Name, FontSize = scoreFontSize, FontWeight = FontWeights.Bold, TextAlignment = TextAlignment.Center, TextTrimming = TextTrimming.CharacterEllipsis }, playerIndex + 1);
         }
         ScorePanel.Children.Add(header);
         foreach (var category in Enum.GetValues<ScoreCategory>())
         {
-            var row = new StackPanel { Orientation = Orientation.Horizontal, Margin = new Thickness(3) };
-            row.Children.Add(new TextBlock { Text = CategoryName(category), Width = 150, FontSize = 16 });
-            foreach (var player in _game.Players)
+            var row = CreateScoreGrid();
+            AddScoreCell(row, new TextBlock { Text = CategoryName(category), FontSize = scoreFontSize, TextTrimming = TextTrimming.CharacterEllipsis }, 0);
+            for (var playerIndex = 0; playerIndex < _game.Players.Count; playerIndex++)
             {
-                var button = new Button { Width = 90, Tag = category, Margin = new Thickness(3) };
+                var player = _game.Players[playerIndex];
+                var button = new Button { Tag = category, Margin = new Thickness(3), FontSize = scoreFontSize };
                 if (player.ScoreSheet.Scores.TryGetValue(category, out var saved)) button.Content = saved;
                 else if (player == _game.CurrentPlayer && _game.CanSelectScore) { button.Content = ScoreCalculator.Calculate(category, _game.Dice.Select(d => d.Value)); button.Click += ScoreClicked; }
                 else button.Content = "–";
                 button.IsEnabled = humanCanAct && player == _game.CurrentPlayer && player.ScoreSheet.IsAvailable(category) && _game.CanSelectScore;
-                row.Children.Add(button);
+                AddScoreCell(row, button, playerIndex + 1);
             }
             ScorePanel.Children.Add(row);
         }
@@ -118,13 +133,32 @@ public partial class MainWindow : Window
 
     private void AddSummaryRow(string label, Func<Player, int> valueSelector)
     {
-        var row = new StackPanel { Orientation = Orientation.Horizontal, Margin = new Thickness(3) };
-        row.Children.Add(new TextBlock { Text = label, Width = 150, FontSize = 16, FontWeight = FontWeights.Bold });
-        foreach (var player in _game.Players)
+        var scoreFontSize = Math.Clamp(ActualWidth / (_game.Players.Count * 13.0), 10, 16);
+        var row = CreateScoreGrid();
+        AddScoreCell(row, new TextBlock { Text = label, FontSize = scoreFontSize, FontWeight = FontWeights.Bold, TextTrimming = TextTrimming.CharacterEllipsis }, 0);
+        for (var playerIndex = 0; playerIndex < _game.Players.Count; playerIndex++)
         {
-            row.Children.Add(new TextBlock { Text = valueSelector(player).ToString(), Width = 90, FontSize = 16, FontWeight = FontWeights.Bold, TextAlignment = TextAlignment.Center });
+            AddScoreCell(row, new TextBlock { Text = valueSelector(_game.Players[playerIndex]).ToString(), FontSize = scoreFontSize, FontWeight = FontWeights.Bold, TextAlignment = TextAlignment.Center }, playerIndex + 1);
         }
         ScorePanel.Children.Add(row);
+    }
+
+    private Grid CreateScoreGrid()
+    {
+        var grid = new Grid { Margin = new Thickness(3) };
+        grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1.8, GridUnitType.Star) });
+        foreach (var _ in _game.Players)
+        {
+            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+        }
+
+        return grid;
+    }
+
+    private static void AddScoreCell(Grid grid, UIElement element, int column)
+    {
+        Grid.SetColumn(element, column);
+        grid.Children.Add(element);
     }
 
     private void NewGameClicked(object sender, RoutedEventArgs e)
@@ -134,8 +168,9 @@ public partial class MainWindow : Window
             return;
         }
 
-        _storage.DeleteGame();
         _isClosingForNewGame = true;
+        _lifetimeCancellation.Cancel();
+        _storage.DeleteGame();
         new StartWindow().Show();
         Close();
     }
@@ -152,6 +187,8 @@ public partial class MainWindow : Window
 
             _storage.SaveGame(_game);
         }
+
+        _lifetimeCancellation.Cancel();
 
         base.OnClosing(e);
     }
@@ -173,8 +210,20 @@ public partial class MainWindow : Window
         while (!_game.IsComplete && _game.CurrentPlayer.IsComputer)
         {
             StatusTextBlock.Text = "Computeren tænker…";
-            await Task.Delay(_thinkingPauseCalculator.GetPause(ComputerActionType.HoldAndRoll, _learningData));
-            await AnimateDiceAsync();
+            try
+            {
+                await Task.Delay(_thinkingPauseCalculator.GetPause(ComputerActionType.HoldAndRoll, _learningData), _lifetimeCancellation.Token);
+                await AnimateDiceAsync(_lifetimeCancellation.Token);
+            }
+            catch (OperationCanceledException)
+            {
+                return;
+            }
+
+            if (_lifetimeCancellation.IsCancellationRequested)
+            {
+                return;
+            }
             _game.Roll();
             PlayRollSound();
             _storage.SaveGame(_game);
@@ -182,7 +231,14 @@ public partial class MainWindow : Window
             UpdateView();
 
             var decision = _computerStrategy.ChooseDecision(_game, _learningData);
-            await Task.Delay(_thinkingPauseCalculator.GetPause(decision.Action, _learningData));
+            try
+            {
+                await Task.Delay(_thinkingPauseCalculator.GetPause(decision.Action, _learningData), _lifetimeCancellation.Token);
+            }
+            catch (OperationCanceledException)
+            {
+                return;
+            }
             if (decision.Action == ComputerActionType.HoldAndRoll)
             {
                 foreach (var index in decision.HeldDiceIndices.Where(index => !_game.Dice[index].IsHeld))
@@ -226,7 +282,7 @@ public partial class MainWindow : Window
         _humanDecisionStopwatch.Restart();
     }
 
-    private async Task AnimateDiceAsync()
+    private async Task AnimateDiceAsync(CancellationToken cancellationToken)
     {
         if (!_settings.RollAnimationEnabled)
         {
@@ -245,7 +301,7 @@ public partial class MainWindow : Window
                 }
             }
 
-            await Task.Delay(55);
+            await Task.Delay(55, cancellationToken);
         }
 
         _isAnimating = false;
@@ -264,6 +320,14 @@ public partial class MainWindow : Window
         var window = new SettingsWindow { Owner = this };
         window.ShowDialog();
         _settings = _storage.LoadSettings();
+    }
+
+    private void WindowSizeChanged(object sender, SizeChangedEventArgs e)
+    {
+        if (_diceButtons is not null)
+        {
+            UpdateView();
+        }
     }
 
     private void ShowResults()

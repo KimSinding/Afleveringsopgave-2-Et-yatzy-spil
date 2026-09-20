@@ -1,12 +1,12 @@
 ﻿<Window x:Class="Yatzy.App.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Yatzy" Width="1050" Height="720" MinWidth="700" MinHeight="520" WindowStartupLocation="CenterScreen" Background="#F4F1EA">
+        Title="Yatzy" Width="1050" Height="720" MinWidth="700" MinHeight="520" WindowStartupLocation="CenterScreen" Background="#F4F1EA" SizeChanged="WindowSizeChanged">
     <Grid Margin="22">
         <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="*"/></Grid.RowDefinitions>
         <DockPanel><Button DockPanel.Dock="Right" Content="Nyt spil" Click="NewGameClicked" Padding="14,7" Width="95" Height="36"/><Button DockPanel.Dock="Right" Content="Indstillinger" Click="SettingsClicked" Padding="10,7" Margin="0,0,8,0" Height="36"/><StackPanel><TextBlock Text="Yatzy" FontSize="30" FontWeight="Bold"/><TextBlock x:Name="TurnTextBlock" FontSize="17"/></StackPanel></DockPanel>
         <TextBlock x:Name="StatusTextBlock" Grid.Row="1" Margin="0,12,0,8" FontSize="16"/>
         <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center"><Button x:Name="Die0" Click="DieClicked" Tag="0" FontSize="40" Width="85" Height="85" Margin="5"/><Button x:Name="Die1" Click="DieClicked" Tag="1" FontSize="40" Width="85" Height="85" Margin="5"/><Button x:Name="Die2" Click="DieClicked" Tag="2" FontSize="40" Width="85" Height="85" Margin="5"/><Button x:Name="Die3" Click="DieClicked" Tag="3" FontSize="40" Width="85" Height="85" Margin="5"/><Button x:Name="Die4" Click="DieClicked" Tag="4" FontSize="40" Width="85" Height="85" Margin="5"/><Button x:Name="RollButton" Content="Kast" Click="RollClicked" Padding="20,9" Margin="18,20,0,20" FontSize="16"/></StackPanel>
-        <ScrollViewer Grid.Row="3" VerticalScrollBarVisibility="Auto"><StackPanel x:Name="ScorePanel"/></ScrollViewer>
+        <ScrollViewer Grid.Row="3" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled"><StackPanel x:Name="ScorePanel"/></ScrollViewer>
     </Grid>
 </Window>
