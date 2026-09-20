@@ -1,0 +1,85 @@
+<Window x:Class="Yatzy.App.StartWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Yatzy"
+        Width="600"
+        MinWidth="480"
+        Height="650"
+        MinHeight="520"
+        WindowStartupLocation="CenterScreen"
+        Background="#F4F1EA">
+    <Window.Resources>
+        <Style TargetType="TextBox">
+            <Setter Property="Margin" Value="0,4,0,8" />
+            <Setter Property="Padding" Value="8,5" />
+            <Setter Property="FontSize" Value="15" />
+        </Style>
+        <Style TargetType="Button">
+            <Setter Property="Padding" Value="18,8" />
+            <Setter Property="FontSize" Value="15" />
+        </Style>
+    </Window.Resources>
+    <Grid Margin="28">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <StackPanel>
+            <TextBlock Text="Yatzy" FontSize="34" FontWeight="Bold" Foreground="#27313B" />
+            <TextBlock Text="Opret et nyt spil" Margin="0,2,0,20" FontSize="17" Foreground="#52606D" />
+            <DockPanel>
+                <TextBlock Text="Antal menneskelige spillere" VerticalAlignment="Center" FontSize="16" />
+                <ComboBox x:Name="PlayerCountComboBox"
+                          Width="80"
+                          HorizontalAlignment="Right"
+                          SelectedIndex="0"
+                          SelectionChanged="PlayerCountChanged">
+                    <ComboBoxItem Content="1" />
+                    <ComboBoxItem Content="2" />
+                    <ComboBoxItem Content="3" />
+                    <ComboBoxItem Content="4" />
+                    <ComboBoxItem Content="5" />
+                    <ComboBoxItem Content="6" />
+                </ComboBox>
+            </DockPanel>
+        </StackPanel>
+
+        <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto" Margin="0,18,0,12">
+            <StackPanel>
+                <TextBlock Text="Spillernavne" FontSize="18" FontWeight="SemiBold" Margin="0,0,0,6" />
+                <StackPanel x:Name="HumanNamesPanel" />
+
+                <CheckBox x:Name="ComputerCheckBox"
+                          Content="Spil mod computeren"
+                          IsChecked="True"
+                          FontSize="16"
+                          Margin="0,12,0,4"
+                          Checked="ComputerParticipationChanged"
+                          Unchecked="ComputerParticipationChanged" />
+                <StackPanel x:Name="ComputerPanel">
+                    <TextBlock Text="Computerens navn (valgfrit)" FontSize="15" />
+                    <TextBox x:Name="ComputerNameTextBox"
+                             MaxLength="20"
+                             TextChanged="NameTextChanged" />
+                </StackPanel>
+            </StackPanel>
+        </ScrollViewer>
+
+        <StackPanel Grid.Row="3">
+            <TextBlock x:Name="ValidationMessageTextBlock"
+                       Foreground="#A61B1B"
+                       TextWrapping="Wrap"
+                       Visibility="Collapsed"
+                       Margin="0,0,0,10" />
+            <Button Content="Start spil"
+                    HorizontalAlignment="Right"
+                    Background="#2F6F4E"
+                    Foreground="White"
+                    BorderBrush="#24543B"
+                    Click="StartGameClicked" />
+        </StackPanel>
+    </Grid>
+</Window>
