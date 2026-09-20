@@ -1,0 +1,9 @@
+<Window x:Class="Yatzy.App.SettingsWindow" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="Indstillinger" SizeToContent="WidthAndHeight" WindowStartupLocation="CenterOwner" ResizeMode="NoResize">
+  <StackPanel Margin="24" MinWidth="300">
+    <TextBlock Text="Indstillinger" FontSize="24" FontWeight="Bold" Margin="0,0,0,14"/>
+    <CheckBox x:Name="AnimationCheckBox" Content="Vis rulle-animation" Margin="0,5"/>
+    <CheckBox x:Name="SoundCheckBox" Content="Afspil lyd" Margin="0,5"/>
+    <Button Content="Nulstil computerens læring" Click="ResetLearningClicked" Margin="0,18,0,5"/>
+    <Button Content="Gem og luk" Click="SaveClicked" HorizontalAlignment="Right" Margin="0,12,0,0" Padding="14,6"/>
+  </StackPanel>
+</Window>

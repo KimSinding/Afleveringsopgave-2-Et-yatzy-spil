@@ -17,6 +17,28 @@ public partial class StartWindow : Window
         CreateHumanNameFields();
     }
 
+    private void WindowLoaded(object sender, RoutedEventArgs e)
+    {
+        var storage = new JsonStorage();
+        var savedGame = storage.LoadGame();
+        if (savedGame is null)
+        {
+            return;
+        }
+
+        if (MessageBox.Show("Vil du fortsætte det gemte spil?", "Yatzy", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+        {
+            new MainWindow(Game.Restore(savedGame, new RandomDiceRoller())).Show();
+            Close();
+            return;
+        }
+
+        if (MessageBox.Show("Vil du slette det gemte spil?", "Yatzy", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+        {
+            storage.DeleteGame();
+        }
+    }
+
     private void PlayerCountChanged(object sender, SelectionChangedEventArgs e) => CreateHumanNameFields();
 
     private void ComputerParticipationChanged(object sender, RoutedEventArgs e)
@@ -91,10 +113,8 @@ public partial class StartWindow : Window
             players.Add(new Player(computerName, isComputer: true));
         }
 
-        _ = new Game(players, new RandomDiceRoller());
-        ValidationMessageTextBlock.Foreground = Brushes.DarkGreen;
-        ValidationMessageTextBlock.Text = "Spillet er oprettet. Selve spillevinduet kommer i næste fase.";
-        ValidationMessageTextBlock.Visibility = Visibility.Visible;
+        new MainWindow(new Game(players, new RandomDiceRoller())).Show();
+        Close();
     }
 
     private bool ValidateNames(bool showMessage)

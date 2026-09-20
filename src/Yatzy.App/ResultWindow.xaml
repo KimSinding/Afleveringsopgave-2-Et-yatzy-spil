@@ -1,0 +1,17 @@
+<Window x:Class="Yatzy.App.ResultWindow" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="Resultat" SizeToContent="WidthAndHeight" MinWidth="420" WindowStartupLocation="CenterOwner" ResizeMode="NoResize">
+  <StackPanel Margin="24">
+    <TextBlock Text="Spillet er slut" FontSize="26" FontWeight="Bold" Margin="0,0,0,8"/>
+    <TextBlock x:Name="WinnersTextBlock" FontSize="17" Margin="0,0,0,14" TextWrapping="Wrap"/>
+    <ListView x:Name="ResultsList" Height="240">
+      <ListView.View>
+        <GridView>
+          <GridViewColumn Header="Spiller" Width="145" DisplayMemberBinding="{Binding Name}"/>
+          <GridViewColumn Header="Øvre" Width="65" DisplayMemberBinding="{Binding Upper}"/>
+          <GridViewColumn Header="Bonus" Width="65" DisplayMemberBinding="{Binding Bonus}"/>
+          <GridViewColumn Header="Total" Width="65" DisplayMemberBinding="{Binding Total}"/>
+        </GridView>
+      </ListView.View>
+    </ListView>
+    <Button Content="Luk" Click="CloseClicked" HorizontalAlignment="Right" Margin="0,15,0,0" Padding="18,6"/>
+  </StackPanel>
+</Window>
